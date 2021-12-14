@@ -1,0 +1,103 @@
+import time
+from pygame.locals import *
+import pygame
+
+apple_x = 200
+apple_y = 0
+basket_x = 0
+basket_y = 350
+score = 0
+life = 3
+
+
+class Apple:
+    def __init__(self, parent_surface):
+        self.apple = pygame.image.load("resources/apple.jpg").convert()
+        self.parent_surface = parent_surface
+        self.parent_surface.blit(self.apple, (apple_x, apple_y))
+        self.basket = Basket(self.parent_surface)
+
+    def create_apple(self, parent_surface):
+
+        self.apple = pygame.image.load("resources/apple.jpg").convert()
+        self.parent_surface = parent_surface
+        self.parent_surface.blit(self.apple, (apple_x, apple_y))
+        self.basket = Basket(self.parent_surface)
+
+    def move_apple_automatically(self):
+        global apple_y
+        apple_y += 25
+        self.parent_surface.fill((3, 252, 202))
+        self.parent_surface.blit(self.apple, (apple_x, apple_y))
+        self.basket.draw_basket()
+
+
+class Basket:
+    def __init__(self, parent_surface):
+
+        self.basket = pygame.image.load("resources/basket.jpg").convert()
+        self.parent_surface = parent_surface
+        self.parent_surface.blit(self.basket, (basket_x, basket_y))
+
+    def move_basket(self, position):
+        global basket_x
+        self.parent_surface.fill((3, 252, 202))
+        if position == "right":
+            basket_x += 25
+        else:
+            basket_x -= 25
+        self.parent_surface.blit(self.basket, (basket_x, basket_y))
+        pygame.display.flip()
+
+    def draw_basket(self):
+        self.parent_surface.blit(self.basket, (basket_x, basket_y))
+        pygame.display.flip()
+
+
+class Game:
+    def __init__(self):
+        pygame.init()
+        self.surface = pygame.display.set_mode((500, 500))
+        self.surface.fill((3, 252, 202))
+        self.basket = Basket(self.surface)
+        self.apple = Apple(self.surface)
+        pygame.display.flip()
+
+    def collision(self):
+        if basket_y + 123 >= apple_y >= basket_y:
+            if basket_x + 75 >= apple_x >= basket_x:
+                return True
+
+    def run(self):
+        running = True
+        global life
+        while running:
+            if apple_y == 500:
+                life -= 1
+                print("you missed the fruit")
+            #if life == 0:
+                break
+            self.apple.move_apple_automatically()
+            time.sleep(0.2)
+            if self.collision():
+                print("you collected the fruit")
+                break
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    running = False
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        running = False
+                    if event.key == K_RIGHT:
+                        self.basket.move_basket("right")
+
+                    if event.key == K_LEFT:
+                        self.basket.move_basket("left")
+
+
+if __name__ == '__main__':
+    game = Game()
+    game.run()
+
+
+
