@@ -11,6 +11,7 @@ score = 0
 life = 3
 delay = 0.2
 
+
 class Bomb:
     def __init__(self, parent_surface):
         self.bomb = pygame.image.load("resources/bomb.jpg").convert()
@@ -20,9 +21,12 @@ class Bomb:
 
     def bomb_issue(self):
         self.parent_surface.fill((3, 252, 202))
+        # replacing apple with bomb
         self.parent_surface.blit(self.bomb, (apple_x, apple_y))
-        self.basket.draw_basket()
+        # displaying score nad life remaining
         self.apple.display()
+        self.basket.draw_basket()
+
         pygame.display.flip()
 
 
@@ -37,7 +41,7 @@ class Apple:
         global delay
         global apple_x
         global apple_y
-        delay -= 0.001
+        delay -= 0.005
         apple_x = random.randint(100, 700)
         apple_y = 0
         self.parent_surface.blit(self.apple, (apple_x, apple_y))
@@ -91,11 +95,10 @@ class Game:
         self.apple = Apple(self.surface)
         self.bomb = Bomb(self.surface)
         pygame.mixer.music.load("resources/explosion.wav")
-
         pygame.display.flip()
 
-
     def collision(self):
+        # 123 and 75 are the height and width of basket respectively
         if basket_y + 123 >= apple_y >= basket_y:
             if basket_x + 75 >= apple_x >= basket_x:
                 return True
@@ -106,11 +109,11 @@ class Game:
         global score
         while running:
             if apple_y == 500:
-                if apple_x % 2 == 0: # bomb condition
+                if apple_x % 2 == 0:  # bomb condition
                     pass
                 else:
                     life -= 1
-                print("you missed the fruit")
+                    print("you missed the fruit")
                 if life == 0:
                     print(f'Game Over!! your score is {score}')
                     break
@@ -118,7 +121,6 @@ class Game:
             self.apple.move_apple_automatically()
             if apple_x % 2 == 0 and apple_y >= 300:
                 self.bomb.bomb_issue()
-
             time.sleep(abs(delay))
             if self.collision() and apple_x % 2 == 0:
                 pygame.mixer.music.play()
@@ -146,7 +148,6 @@ class Game:
     def display(self):
         self.surface.fill((3, 252, 202))
         font = pygame.font.Font(pygame.font.get_default_font(), 36)
-
         # now print the text
         text_surface = font.render('Game Over!!', True, (0, 0, 0))
         self.surface.blit(text_surface, dest=(400, 100))
